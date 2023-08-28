@@ -43,6 +43,16 @@ class CryptoManager
         return openssl_verify($data, $signature, $publicKey, OPENSSL_ALGO_SHA512) === 1;
     }
 
+    public function encrypt($data, $publicKey): string
+    {
+        openssl_public_encrypt($data, $encrypted, $publicKey);
+        return $encrypted;
+    }
+    public function decrypt($data, $privateKey): string
+    {
+        openssl_private_decrypt($data, $decrypted, $privateKey);
+        return $decrypted;
+    }
     /**
      * @throws Exception
      */
