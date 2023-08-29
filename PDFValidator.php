@@ -5,7 +5,7 @@ class PDFValidator
     /**
      * @throws Exception
      */
-    public static function validate(EnhancedPDF $PDF): bool
+    public static function validate(PDFCryptoSigner $PDF): bool
     {
         if (!file_exists($PDF->path())) {
             throw new Exception('File not found.');
