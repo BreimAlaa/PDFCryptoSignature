@@ -1,6 +1,6 @@
 <?php
-require 'CryptoSigner.php';
-require 'PDFValidator.php';
+require_once 'CryptoSigner.php';
+require_once 'PDFValidator.php';
 class PDFCryptoSigner implements CryptoSigner
 {
     private $path;
@@ -37,63 +37,59 @@ class PDFCryptoSigner implements CryptoSigner
         return $enhancedPDF;
     }
 
-    public function sign(array $signerInfo = []): void
+    public function sign(string $privateKey, array $signerInfo = []): void
     {
-        // TODO: Implement sign() method.
-        // get the file content
-        // check if it hasn't been signed yet
-        // sign the file
-        // sign the header
-        // create a signature with the signed file and the header
-        // embed the signature
-        // save the file
-
         $content = file_get_contents($this->path);
-        $base64_file = base64_encode($content);
-        $hash = hash('sha256', $base64_file);
+        $base64File = CryptoManager::base64Encode($content);
+        $hashed = CryptoManager::hash($base64File);
+        $signed = CryptoManager::sign($hashed, $privateKey);
 
-        $certificateInfo['version'] = 1;
-        $certificateInfo['date'] = date('Y-m-d H:i:s');
+        $signerInfo['version'] = 1;
+        $signerInfo['date'] = date('Y-m-d H:i:s');
 
-        $details = json_encode($certificateInfo);
+        $headers = json_encode($signerInfo);
+        $base64Headers = CryptoManager::base64Encode($headers);
+        $encryptedHeaders = CryptoManager::encrypt($base64Headers, $privateKey);
 
-        $base64_details = base64_encode($details);
-
-        $comment = '#@#' . $hash . '#@#' . $base64_details;
+        $comment = '7PI' . $signed . '7PI' . $encryptedHeaders;
 
         $modifiedPDFContent = $content . '\n' . '% ' . $comment;
 
         file_put_contents($this->path, $modifiedPDFContent);
     }
 
-    public function verify(): array
+    public function verify(string $publicKey): array
     {
         try {
             $content = file_get_contents($this->path);
+            $file = explode('\n', $content);
+            $signatures = end($file);
+            $signatures = substr($signatures, 2);
+            array_pop($file);
+            $file = implode('\n', $file);
 
-            $file = explode('\\n% #@#', $content);
-            $base64_file = base64_encode($file[0]);
 
-            $hash = hash('sha256', $base64_file);
+            $base64File = CryptoManager::base64Encode($file);
+            $hashed = CryptoManager::hash($base64File);
 
-            $provided_hash = explode('#@#', $file[1])[0];
-            $provided_details = explode('#@#', $file[1])[1];
-            $details = json_decode(base64_decode($provided_details), true);
+            $explodedSignature = explode('7PI', $signatures);
+            if (count($explodedSignature) !== 3) {
+                throw new Exception('Invalid signature');
+            }
+            $fileSignature = $explodedSignature[1];
+            $encryptedHeaders = $explodedSignature[2];
 
-            $details['verified'] = $hash == $provided_hash ? 'Yes' : 'No';
+            if (CryptoManager::verify($hashed, $fileSignature, $publicKey)){
+                $headers = json_decode(CryptoManager::base64Decode(CryptoManager::decrypt($encryptedHeaders, $publicKey)), true);
+                $headers['verified'] = 'Yes';
+            } else {
+                $headers['verified'] = 'No';
+            }
 
-            $to_camel_case = function ($string) {
-                $string = str_replace('_', ' ', $string);
-                return ucwords($string);
-            };
-            $details = array_combine(
-                array_map($to_camel_case, array_keys($details)),
-                $details
-            );
         } catch (Exception $e) {
-            $details = ['verified' => 'No'];
+            $headers = ['verified' => 'No'];
         }
-        return $details;
+        return $headers;
     }
 
     public function path(): string
