@@ -1,7 +1,7 @@
 <?php
-require 'EnhancedFile.php';
+require 'CryptoSigner.php';
 require 'PDFValidator.php';
-class EnhancedPDF implements EnhancedFile
+class PDFCryptoSigner implements CryptoSigner
 {
     private $path;
 
@@ -18,7 +18,7 @@ class EnhancedPDF implements EnhancedFile
     /**
      * @throws Exception
      */
-    public function loadFile($path): EnhancedFile
+    public function loadFile($path): CryptoSigner
     {
         $this->path = $path;
 
@@ -29,7 +29,7 @@ class EnhancedPDF implements EnhancedFile
     /**
      * @throws Exception
      */
-    public static function load($path): EnhancedFile
+    public static function load($path): CryptoSigner
     {
         $enhancedPDF = new self($path);
         PDFValidator::validate($enhancedPDF);
