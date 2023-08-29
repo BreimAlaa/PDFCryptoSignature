@@ -18,8 +18,8 @@ class Test
                     echo "$class $count Succeeded: $msg";
                 } catch (Throwable  $e) {
                     echo "\033[31m";
-                    echo "$class $count Failed: $msg ";
-//                    . PHP_EOL . $e->getMessage().PHP_EOL.$e->getTraceAsString();
+                    echo "$class $count Failed: $msg ".$e->getFile().':'.$e->getLine()
+                    . PHP_EOL . $e->getMessage().PHP_EOL.$e->getTraceAsString();
                 }
                 echo PHP_EOL;
             }
