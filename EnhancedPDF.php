@@ -11,20 +11,30 @@ class EnhancedPDF implements EnhancedFile
     public function __construct(string $path = null)
     {
         if ($path !== null) {
-            $this->load($path);
+            $this->loadFile($path);
         }
     }
 
     /**
      * @throws Exception
      */
-    public function load($path): EnhancedFile
+    public function loadFile($path): EnhancedFile
     {
         $this->path = $path;
 
         PDFValidator::validate($this);
 
         return $this;
+    }
+    /**
+     * @throws Exception
+     */
+    public static function load($path): EnhancedFile
+    {
+        $enhancedPDF = new self($path);
+        PDFValidator::validate($enhancedPDF);
+
+        return $enhancedPDF;
     }
 
     public function sign(array $signerInfo = []): void
@@ -84,17 +94,6 @@ class EnhancedPDF implements EnhancedFile
             $details = ['verified' => 'No'];
         }
         return $details;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public static function __callStatic($name, $arguments): mixed
-    {
-        if (method_exists(EnhancedPDF::class, $name)) {
-            return call_user_func_array([EnhancedPDF::class, $name], $arguments);
-        }
-        throw new Exception("Method $name does not exist.");
     }
 
     public function path(): string
