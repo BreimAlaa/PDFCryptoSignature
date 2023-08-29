@@ -7,11 +7,12 @@ class Test
         $methods = get_class_methods(static::class);
         $class = get_called_class();
         $class = preg_replace('/(?<!^)[A-Z]/', ' $0', $class);
+        $count = 0;
         foreach ($methods as $key=>$method) {
-            $count = $key + 1;
             $msg = ucfirst(str_replace('_', ' ', $method));
             $msg = substr($msg, 5);
             if (strpos($method, 'test') === 0) {
+                $count++;
                 try {
                     (new static)->$method();
                     echo "\033[32m";
