@@ -1,6 +1,6 @@
 <?php
 require_once 'Test.php';
-require_once '../PDFCryptoSigner.php';
+require_once '../src/PDFCryptoSigner.php';
 class PdfCryptoSignerTest extends Test{
 
     private string $publicKey;

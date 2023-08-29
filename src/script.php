@@ -6,17 +6,17 @@ $keys = CryptoManager::generateKeyPair();
 $publicKey = $keys['public_key'];
 $privateKey = $keys['private_key'];
 
-copy('original.pdf', 'original-copy.pdf');
+copy('original.pdf', 'signed.pdf');
 
-PDFCryptoSigner::load('original-copy.pdf')
+PDFCryptoSigner::load('signed.pdf')
     ->sign($privateKey, [
         'name' => 'Alaa Breim',
         'email' => 'breim.alaa@gmail.com',
         ]);
 
-$verified = PDFCryptoSigner::load('original-copy.pdf')
+$verified = PDFCryptoSigner::load('signed.pdf')
     ->verify($publicKey);
 
 var_dump($verified);
 
-unlink('original-copy.pdf');
+unlink('signed.pdf');

@@ -1,6 +1,6 @@
 <?php
 require_once 'Test.php';
-require_once '../CryptoManager.php';
+require_once '../src/CryptoManager.php';
 class CryptoTest extends Test{
     public function test_generate_public_private_keys(): void
     {
