@@ -101,12 +101,12 @@ class CryptoManager
         );
         $res = openssl_pkey_new($config);
         openssl_pkey_export($res, $privateKey);
-        $privateKey = openssl_pkey_get_details($res);
-        $privateKey = $privateKey["key"];
-        return array(
-            "privateKey" => $privateKey,
-            "privateKey" => $privateKey
-        );
+        $publicKey = openssl_pkey_get_details($res);
+        $publicKey = $publicKey["key"];
+        return [
+            'private_key' => $privateKey,
+            'public_key' => $publicKey
+        ];
     }
 
     private function signForAlaa($data, $privateKey): string
