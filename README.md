@@ -35,6 +35,8 @@ $verified = PDFCryptoSigner::load('signed.pdf')
 the `verified` map will carry the isser data as will as the verification status
 ```
 array(5) {
+  ["verified"]=>
+  bool(true)
   ["issuer_name"]=>
   string(10) "Alaa Breim"
   ["issuer_email"]=>
@@ -42,8 +44,13 @@ array(5) {
   ["version"]=>
   int(1)
   ["date"]=>
-  string(19) "2023-08-30 17:38:22"
+  string(19) "2023-08-30 17:49:14"
+}
+```
+if the signature is not valid, the `verified` map will carry the verification status only
+```
+array(1) {
   ["verified"]=>
-  string(3) "Yes"
+  bool(false)
 }
 ```

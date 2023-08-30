@@ -79,15 +79,13 @@ class PDFCryptoSigner implements CryptoSigner
             $fileSignature = $explodedSignature[1];
             $encryptedHeaders = $explodedSignature[2];
 
-            if (CryptoManager::verify($hashed, $fileSignature, $publicKey)){
-                $headers = json_decode(CryptoManager::base64Decode(CryptoManager::decrypt($encryptedHeaders, $publicKey)), true);
-                $headers['verified'] = 'Yes';
-            } else {
-                $headers['verified'] = 'No';
+            $headers['verified'] = CryptoManager::verify($hashed, $fileSignature, $publicKey);
+            if ($headers['verified']){
+                $headers = array_merge($headers, json_decode(CryptoManager::base64Decode(CryptoManager::decrypt($encryptedHeaders, $publicKey)), true));
             }
 
         } catch (Exception $e) {
-            $headers = ['verified' => 'No'];
+            $headers = ['verified' => false];
         }
         return $headers;
     }
