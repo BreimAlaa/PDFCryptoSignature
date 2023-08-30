@@ -18,21 +18,21 @@ class PDFCryptoSigner implements CryptoSigner
     /**
      * @throws Exception
      */
-    public function loadFile($path): CryptoSigner
+    public function loadFile(string $path): CryptoSigner
     {
         $this->path = $path;
 
-        PDFValidator::validate($this);
+        PDFValidator::validate($path);
 
         return $this;
     }
     /**
      * @throws Exception
      */
-    public static function load($path): CryptoSigner
+    public static function load(string $path): CryptoSigner
     {
         $enhancedPDF = new self($path);
-        PDFValidator::validate($enhancedPDF);
+        PDFValidator::validate($path);
 
         return $enhancedPDF;
     }
